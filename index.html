@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2F7D4F">
+<meta name="description" content="হাঁসের খামারের খরচ, আয়, ডিম, হাঁসের সংখ্যা আর টিকার হিসাব">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>হাঁসের খামারের হিসাব</title>
+<style>
+/* Hind Siliguri (SIL Open Font License, see FONT-LICENSE.txt), bundled so the app works offline */
+@font-face{font-family:"Hind Siliguri";font-style:normal;font-weight:400;font-display:swap;src:url(font-bn-400.woff2) format("woff2");unicode-range:U+0951-0952,U+0964-0965,U+0980-09FE,U+1CD0,U+1CD2,U+1CD5-1CD6,U+1CD8,U+1CE1,U+1CEA,U+1CED,U+1CF2,U+1CF5-1CF7,U+200C-200D,U+20B9,U+25CC,U+A8F1}
+@font-face{font-family:"Hind Siliguri";font-style:normal;font-weight:600;font-display:swap;src:url(font-bn-600.woff2) format("woff2");unicode-range:U+0951-0952,U+0964-0965,U+0980-09FE,U+1CD0,U+1CD2,U+1CD5-1CD6,U+1CD8,U+1CE1,U+1CEA,U+1CED,U+1CF2,U+1CF5-1CF7,U+200C-200D,U+20B9,U+25CC,U+A8F1}
+@font-face{font-family:"Hind Siliguri";font-style:normal;font-weight:400;font-display:swap;src:url(font-lat-400.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Hind Siliguri";font-style:normal;font-weight:600;font-display:swap;src:url(font-lat-600.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+:root{
+  /* Layout: one phone-width column; summary on top, big tap targets, bottom tab bar + one add button. */
+  --bg:#F3F6F1; --surface:#FFFFFF; --surface-2:#E8EFE9; --ink:#17251C; --muted:#5A6A5F; --line:#D5DFD7;
+  --accent:#2F7D4F; --accent-ink:#FFFFFF; --accent-soft:#DCEFE2;
+  --amber:#9C6410; --amber-soft:#FBEFD5;
+  --good:#1D7443; --bad:#B3261E; --bad-soft:#FBE3E1; --warn:#8F5300; --warn-soft:#FFEBC7;
+  --font-body:"Hind Siliguri","Noto Sans Bengali","Nirmala UI",system-ui,sans-serif;
+  --font-display:"Hind Siliguri","Noto Sans Bengali","Nirmala UI",system-ui,sans-serif;
+  --r:14px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0F1712; --surface:#17221B; --surface-2:#1F2C24; --ink:#E6EEE8; --muted:#9FB0A5; --line:#2B3B31;
+    --accent:#5CC189; --accent-ink:#0B130E; --accent-soft:#1D3828;
+    --amber:#F2B84B; --amber-soft:#3A2E14;
+    --good:#6FD39B; --bad:#FF8A80; --bad-soft:#3D1F1C; --warn:#FFC266; --warn-soft:#3A2A10;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.5;-webkit-tap-highlight-color:transparent;font-variant-numeric:tabular-nums}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;line-height:1.25}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px calc(150px + env(safe-area-inset-bottom))}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(10px + env(safe-area-inset-top)) 16px 8px;max-width:560px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.top img{width:40px;height:40px;border-radius:10px;flex:none}
+.top h1{font-size:20px;font-weight:600}
+.top p{margin:0;color:var(--muted);font-size:14px}
+.banner{border-radius:var(--r);padding:12px 14px;margin:8px 0;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.banner p{margin:0;flex:1 1 200px}
+.banner.warn{background:var(--warn-soft);color:var(--warn)}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.banner.info{background:var(--accent-soft);color:var(--ink)}
+
+.hero{background:var(--accent);color:var(--accent-ink);border-radius:20px;padding:18px 18px 16px;margin:8px 0 14px}
+.hero .eyebrow{margin:0;font-size:15px;opacity:.9}
+.hero .big{margin:2px 0 4px;font-size:44px;font-weight:600;line-height:1.1}
+.hero .big small{font-size:20px;font-weight:400}
+.hero .sub{margin:0;font-size:15px;opacity:.92}
+
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 14px}
+.act{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:86px;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:10px 6px;font-size:16px;font-weight:600;cursor:pointer}
+.act svg{width:28px;height:28px}
+.act:active{transform:scale(.98)}
+.act.exp svg{color:var(--bad)} .act.inc svg{color:var(--good)} .act.egg svg{color:var(--amber)} .act.flock svg{color:var(--accent)} .act.vac svg{color:var(--warn)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin:0 0 14px}
+.card h2{font-size:18px;font-weight:600;margin-bottom:10px}
+.card p{margin:0 0 8px}
+.muted{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--surface-2);border-radius:10px;padding:10px}
+.stat .k{font-size:14px;color:var(--muted);display:block}
+.stat .v{font-size:19px;font-weight:600;display:block;word-break:break-word}
+.stat.wide{grid-column:span 3}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+.line-item{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid var(--line)}
+.line-item:first-of-type{border-top:0}
+.bar{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden;margin:2px 0 8px}
+.bar i{display:block;height:100%;border-radius:4px;background:var(--accent)}
+.bar.exp i{background:var(--bad)} .bar.inc i{background:var(--good)}
+
+.alert{display:flex;align-items:center;gap:10px;border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.alert.soon{background:var(--warn-soft);color:var(--warn)}
+.alert.late{background:var(--bad-soft);color:var(--bad)}
+.alert div{flex:1}
+.alert strong{display:block;color:var(--ink)}
+
+.btn{min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--surface);padding:10px 16px;font-weight:600;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.small{min-height:40px;padding:6px 12px;font-size:15px}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px}
+.btn-row .btn{flex:1 1 140px}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+
+.monthnav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0 10px}
+.monthnav h2{font-size:20px;font-weight:600;text-align:center;flex:1}
+.monthnav .btn{min-width:52px;font-size:22px;line-height:1}
+.monthnav .btn:disabled{opacity:.35}
+.filter{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px}
+.filter button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;min-height:40px;cursor:pointer}
+.filter button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.day{font-size:15px;color:var(--muted);font-weight:600;margin:14px 0 6px}
+.entries{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.entry{width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer}
+.entry .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;flex:none}
+.entry .ic svg{width:22px;height:22px}
+.ic.exp{background:var(--bad-soft);color:var(--bad)} .ic.inc{background:var(--accent-soft);color:var(--good)} .ic.egg{background:var(--amber-soft);color:var(--amber)} .ic.flock{background:var(--accent-soft);color:var(--accent)} .ic.vac{background:var(--warn-soft);color:var(--warn)}
+.entry .tx{flex:1;min-width:0}
+.entry .tx b{display:block;font-weight:600}
+.entry .tx span{display:block;color:var(--muted);font-size:14px;overflow-wrap:anywhere}
+.entry .amt{font-weight:600;white-space:nowrap}
+.empty{text-align:center;color:var(--muted);padding:28px 10px}
+
+.month-card .head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.month-card .head h2{margin:0}
+.month-card dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:0}
+.month-card dt{color:var(--muted)} .month-card dd{margin:0;text-align:right;font-weight:600}
+
+label.field{display:block;margin:0 0 12px}
+label.field > span{display:block;font-weight:600;margin-bottom:4px}
+label.field small{display:block;color:var(--muted);font-weight:400}
+input[type=text],input[type=date],input:not([type]){width:100%;min-height:52px;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:10px 12px;font-size:18px}
+input:focus{border-color:var(--accent)}
+fieldset.chips{border:0;padding:0;margin:0 0 12px}
+fieldset.chips legend{font-weight:600;margin-bottom:6px;padding:0}
+.chipset{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip span,.chip-btn{display:inline-block;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;min-height:42px;cursor:pointer}
+.chip input:checked + span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.chip input:focus-visible + span{outline:3px solid var(--amber);outline-offset:2px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.err{color:var(--bad);min-height:1.5em;margin:0 0 6px;font-weight:600}
+.hint{background:var(--surface-2);border-radius:10px;padding:8px 12px;font-size:15px;margin:0 0 12px}
+
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.tabs button{border:0;background:none;padding:8px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:14px;color:var(--muted);min-height:60px;cursor:pointer}
+.tabs button svg{width:24px;height:24px}
+.tabs button[aria-current="page"]{color:var(--accent);font-weight:600}
+.fab{position:fixed;z-index:11;right:max(16px,calc(50% - 264px));bottom:calc(76px + env(safe-area-inset-bottom));min-height:56px;border-radius:999px;border:0;background:var(--accent);color:var(--accent-ink);font-weight:600;font-size:18px;padding:0 22px 0 16px;display:flex;align-items:center;gap:6px;box-shadow:0 6px 18px rgba(20,60,35,.28);cursor:pointer}
+.fab svg{width:26px;height:26px}
+
+.overlay{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,20,14,.45);opacity:0;transition:opacity .18s}
+.overlay.open{opacity:1}
+.overlay[hidden]{display:none}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:92%;overflow:auto;border-radius:20px 20px 0 0;padding:14px 16px calc(18px + env(safe-area-inset-bottom));transform:translateY(24px);transition:transform .18s}
+.overlay.open .sheet{transform:none}
+.sheet-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-14px -16px 12px;padding:14px 16px 8px;position:sticky;top:-14px;z-index:2;background:var(--bg)}
+.sheet-h h2{font-size:21px;font-weight:600}
+.x{border:0;background:var(--surface-2);border-radius:999px;width:44px;height:44px;font-size:20px;cursor:pointer}
+.pick{display:grid;gap:10px}
+.pick .act{flex-direction:row;justify-content:flex-start;min-height:64px;padding:10px 16px;font-size:18px;gap:14px}
+.sheet-actions{display:flex;gap:8px;margin-top:6px}
+.sheet-actions .primary{flex:1}
+.dialog .sheet{border-radius:20px;margin:16px;max-width:440px}
+.dialog{align-items:center}
+.toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:30;background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center}
+.toast.show{opacity:1}
+.onb{max-width:560px;margin:0 auto;padding:calc(24px + env(safe-area-inset-top)) 16px 40px}
+.onb .logo{width:72px;height:72px;border-radius:18px}
+.onb h1{font-size:28px;font-weight:600;margin:12px 0 4px}
+footer.note{color:var(--muted);font-size:13px;text-align:center;margin-top:10px}
+@media (max-width:360px){.actions{grid-template-columns:repeat(2,1fr)} .stats{grid-template-columns:1fr 1fr} .stat.wide{grid-column:span 2} .hero .big{font-size:38px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top" id="top" hidden>
+  <img src="icon-192.png" alt="">
+  <div><h1 id="farmName"></h1><p id="todayLbl"></p></div>
+</header>
+<main class="wrap" id="view"></main>
+<nav class="tabs" id="tabs" hidden aria-label="অ্যাপের অংশ"><div class="in">
+  <button type="button" data-act="tab" data-tab="home" id="tab-home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>হোম</button>
+  <button type="button" data-act="tab" data-tab="list" id="tab-list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>খাতা</button>
+  <button type="button" data-act="tab" data-tab="month" id="tab-month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>মাসিক</button>
+  <button type="button" data-act="tab" data-tab="more" id="tab-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>সেটিংস</button>
+</div></nav>
+<button type="button" class="fab" id="fab" data-act="pick" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>লিখুন</button>
+
+<div class="overlay" id="sheetWrap" hidden><section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" id="sheet"></section></div>
+<div class="overlay dialog" id="dlgWrap" hidden><section class="sheet" role="alertdialog" aria-modal="true" id="dlg"></section></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="restoreInput" accept=".json,application/json" hidden>
+
+<script>
+(() => {
+"use strict";
+
+/* ---------- fixed lists ---------- */
+const KEY = "hkh.v1";
+const EXP_CATS = ["হাঁস / বাচ্চা কেনা", "খাবার", "ওষুধ ও টিকা", "ডাক্তার খরচ", "ঘর / খোঁয়াড়", "সরঞ্জাম", "বিদ্যুৎ ও পানি", "শ্রমিকের মজুরি", "পরিবহন", "অন্যান্য"];
+const INC_CATS = ["ডিম বিক্রি", "হাঁস বিক্রি", "বাচ্চা বিক্রি", "সার / বিষ্ঠা বিক্রি", "অন্যান্য"];
+const UNITS = ["টি", "কেজি", "বস্তা", "হালি", "ডজন", "লিটার", "প্যাকেট", "বোতল"];
+const VAC_SUGGEST = ["ডাক প্লেগ", "ডাক কলেরা", "কৃমির ওষুধ", "ভিটামিন", "স্যালাইন"];
+const FLOCK = { dead: "মারা গেছে", sold: "বিক্রি হয়েছে", eaten: "খাওয়া / উপহার", add: "নতুন যোগ (কেনা / ফোটানো)" };
+const TYPES = { exp: "খরচ", inc: "আয়", egg: "ডিম", flock: "হাঁস কম-বেশি", vac: "টিকা / ওষুধ" };
+
+const ICON = {
+  exp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>',
+  inc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>',
+  egg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c-3.6 0-6.5 5.4-6.5 9.6A6.5 6.5 0 0 0 12 19.5a6.5 6.5 0 0 0 6.5-6.9C18.5 8.4 15.6 3 12 3z"/></svg>',
+  flock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l2.6-.7"/><circle cx="8.5" cy="7.5" r="2.6"/><path d="M8 10c-2.2 1.6-3 3.6-2.2 5.6 1 2.6 4 3.9 7.4 3.9 3.8 0 6.9-2.2 7.8-5.9-1.6.6-3.7.6-5.5-.2-1.5-.7-3.3-1.5-5-1"/></svg>',
+  vac: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3l4 4M19 5l-3 3"/><path d="M16 8L7.5 16.5 4 17l.5-3.5L13 5z"/><path d="M10 11l2 2M7.5 13.5l2 2M3 21l1.5-1.5"/></svg>'
+};
+
+/* ---------- helpers ---------- */
+const nf = new Intl.NumberFormat("bn-BD", { maximumFractionDigits: 2 });
+const fmt = (v) => nf.format(v);
+const tk = (v) => "৳ " + nf.format(Math.round(v));
+const dLong = new Intl.DateTimeFormat("bn-BD", { day: "numeric", month: "long", year: "numeric" });
+const dDay = new Intl.DateTimeFormat("bn-BD", { day: "numeric", month: "long", weekday: "long" });
+const dMonth = new Intl.DateTimeFormat("bn-BD", { month: "long", year: "numeric" });
+const pad = (n) => String(n).padStart(2, "0");
+const iso = (d) => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const parseISO = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+const todayISO = () => iso(new Date());
+const daysBetween = (a, b) => Math.round((parseISO(b) - parseISO(a)) / 86400000);
+const monthOf = (s) => s.slice(0, 7);
+const curMonth = () => monthOf(todayISO());
+const monthLabel = (ym) => { const [y, m] = ym.split("-").map(Number); return dMonth.format(new Date(y, m - 1, 1)); };
+const shiftMonth = (ym, k) => { const [y, m] = ym.split("-").map(Number); const d = new Date(y, m - 1 + k, 1); return d.getFullYear() + "-" + pad(d.getMonth() + 1); };
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const BN = "০১২৩৪৫৬৭৮৯";
+const toNum = (v) => { const s = String(v == null ? "" : v).trim().replace(/[০-৯]/g, (d) => BN.indexOf(d)).replace(/,/g, ""); if (s === "") return NaN; const x = Number(s); return Number.isFinite(x) ? x : NaN; };
+const isDate = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s || "");
+const $ = (id) => document.getElementById(id);
+
+/* ---------- storage (on this phone only) ---------- */
+let state = null;
+let storageOK = true;
+function load() {
+  try { const raw = localStorage.getItem(KEY); return raw ? JSON.parse(raw) : null; }
+  catch (e) { storageOK = false; return null; }
+}
+function persist() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); storageOK = true; }
+  catch (e) { storageOK = false; }
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persisted().then((p) => { if (!p) navigator.storage.persist(); }); } catch (e) { /* ignore */ }
+}
+
+/* ---------- calculations ---------- */
+function totals(list) {
+  const t = { add: 0, dead: 0, sold: 0, eaten: 0, exp: 0, inc: 0, eggs: 0, broken: 0 };
+  for (const e of list) {
+    if (e.t === "exp") t.exp += e.amount || 0;
+    else if (e.t === "inc") t.inc += e.amount || 0;
+    else if (e.t === "egg") { t.eggs += e.count || 0; t.broken += e.broken || 0; }
+    else if (e.t === "flock" && e.kind in t) t[e.kind] += e.n || 0;
+  }
+  t.now = t.add - t.dead - t.sold - t.eaten;
+  t.profit = t.inc - t.exp;
+  t.good = t.eggs - t.broken;
+  return t;
+}
+const inMonth = (ym) => state.entries.filter((e) => monthOf(e.d) === ym);
+function ageDays() {
+  const s = state.settings;
+  if (!isDate(s.arrivalDate)) return null;
+  const d = daysBetween(s.arrivalDate, todayISO()) + (s.arrivalAge || 0);
+  return d >= 0 ? d : null;
+}
+function ageText(days) {
+  if (days == null) return "";
+  const w = Math.floor(days / 7), d = days % 7;
+  if (!w) return fmt(d) + " দিন";
+  return fmt(w) + " সপ্তাহ" + (d ? " " + fmt(d) + " দিন" : "");
+}
+function vacAlerts() {
+  const today = todayISO();
+  return state.entries
+    .filter((e) => e.t === "vac" && isDate(e.next) && !e.done)
+    .map((e) => ({ e, left: daysBetween(today, e.next) }))
+    .filter((x) => x.left <= 7)
+    .sort((a, b) => a.left - b.left);
+}
+function sortedEntries(list) {
+  return list.slice().sort((a, b) => (a.d < b.d ? 1 : a.d > b.d ? -1 : (b.c || 0) - (a.c || 0)));
+}
+
+/* ---------- UI state ---------- */
+let tab = "home";
+let listMonth = curMonth();
+let listFilter = "all";
+let installPrompt = null;
+const standalone = () => window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
+/* ---------- rendering ---------- */
+function render() {
+  const view = $("view");
+  if (!state) { renderOnboarding(view); return; }
+  view.className = "wrap";
+  $("top").hidden = false; $("tabs").hidden = false; $("fab").hidden = false;
+  $("farmName").textContent = state.settings.farmName || "আমার হাঁসের খামার";
+  $("todayLbl").textContent = "আজ " + dDay.format(new Date());
+  for (const t of ["home", "list", "month", "more"]) {
+    const b = $("tab-" + t);
+    if (t === tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+  }
+  let html = storageOK ? "" : '<div class="banner bad"><p>এই ব্রাউজারে হিসাব সেভ হচ্ছে না। অ্যাপটি Chrome-এ খুলুন (প্রাইভেট/ইনকগনিটো নয়)।</p></div>';
+  html += tab === "home" ? homeHTML() : tab === "list" ? listHTML() : tab === "month" ? monthHTML() : moreHTML();
+  view.innerHTML = html;
+}
+
+function homeHTML() {
+  const t = totals(state.entries);
+  const age = ageDays();
+  const m = curMonth();
+  const mt = totals(inMonth(m));
+  const todayEggs = state.entries.filter((e) => e.t === "egg" && e.d === todayISO()).reduce((s, e) => s + (e.count || 0), 0);
+  let h = "";
+  h += '<section class="hero" aria-label="হাঁসের সংখ্যা">'
+    + '<p class="eyebrow">এখন খামারে আছে</p>'
+    + '<p class="big">' + fmt(t.now) + ' <small>টি হাঁস</small></p>'
+    + '<p class="sub">' + (age != null ? "বয়স " + ageText(age) + " · " : "") + "মারা গেছে " + fmt(t.dead) + " · বিক্রি " + fmt(t.sold) + "</p></section>";
+
+  for (const a of vacAlerts()) {
+    const late = a.left < 0;
+    const when = late ? fmt(-a.left) + " দিন আগে দেওয়ার কথা ছিল" : a.left === 0 ? "আজ দিতে হবে" : fmt(a.left) + " দিন পর (" + dLong.format(parseISO(a.e.next)) + ")";
+    h += '<div class="alert ' + (late ? "late" : "soon") + '" role="note"><div><strong>' + esc(a.e.name) + " — পরের ডোজ</strong>" + when + '</div><button type="button" class="btn small" data-act="vacDone" data-id="' + a.e.id + '">দেওয়া হয়েছে</button></div>';
+  }
+
+  const last = state.settings.lastBackup;
+  if (state.entries.length > 1 && (!last || daysBetween(last, todayISO()) >= 7)) {
+    h += '<div class="banner warn"><p>' + (last ? fmt(daysBetween(last, todayISO())) + " দিন ব্যাকআপ নেওয়া হয়নি।" : "এখনো কোনো ব্যাকআপ নেওয়া হয়নি।") + ' ফোন হারালে হিসাব হারাবে।</p><button type="button" class="btn small" data-act="backupShare">এখন ব্যাকআপ নিন</button></div>';
+  }
+  if (installPrompt && !standalone()) {
+    h += '<div class="banner info"><p>ফোনের হোম স্ক্রিনে অ্যাপ হিসেবে বসান — তাহলে এক চাপে খুলবে।</p><button type="button" class="btn small primary" data-act="install">বসান</button></div>';
+  }
+
+  h += '<section class="actions" aria-label="নতুন হিসাব লিখুন">';
+  for (const k of ["exp", "inc", "egg", "flock", "vac"]) h += '<button type="button" class="act ' + k + '" data-act="form" data-type="' + k + '">' + ICON[k] + esc(TYPES[k]) + "</button>";
+  h += '<button type="button" class="act" data-act="tab" data-tab="list">' + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>সব লেখা</button>';
+  h += "</section>";
+
+  h += '<section class="card"><h2>' + esc(monthLabel(m)) + "</h2>"
+    + '<div class="stats">'
+    + '<div class="stat"><span class="k">খরচ</span><span class="v">' + tk(mt.exp) + "</span></div>"
+    + '<div class="stat"><span class="k">আয়</span><span class="v">' + tk(mt.inc) + "</span></div>"
+    + '<div class="stat"><span class="k">' + (mt.profit < 0 ? "ক্ষতি" : "লাভ") + '</span><span class="v ' + (mt.profit < 0 ? "neg" : mt.profit > 0 ? "pos" : "") + '">' + tk(Math.abs(mt.profit)) + "</span></div>"
+    + '<div class="stat"><span class="k">আজ ডিম</span><span class="v">' + fmt(todayEggs) + "</span></div>"
+    + '<div class="stat"><span class="k">এ মাসে ডিম</span><span class="v">' + fmt(mt.eggs) + "</span></div>"
+    + '<div class="stat"><span class="k">এ মাসে মারা</span><span class="v">' + fmt(mt.dead) + "</span></div>"
+    + "</div></section>";
+
+  const rate = t.add ? (t.dead / t.add) * 100 : 0;
+  h += '<section class="card"><h2>শুরু থেকে মোট</h2><div class="stats">'
+    + '<div class="stat"><span class="k">মোট খরচ</span><span class="v">' + tk(t.exp) + "</span></div>"
+    + '<div class="stat"><span class="k">মোট আয়</span><span class="v">' + tk(t.inc) + "</span></div>"
+    + '<div class="stat"><span class="k">' + (t.profit < 0 ? "মোট ক্ষতি" : "মোট লাভ") + '</span><span class="v ' + (t.profit < 0 ? "neg" : t.profit > 0 ? "pos" : "") + '">' + tk(Math.abs(t.profit)) + "</span></div>"
+    + '<div class="stat"><span class="k">ভালো ডিম</span><span class="v">' + fmt(t.good) + "</span></div>"
+    + '<div class="stat"><span class="k">মৃত্যুর হার</span><span class="v">' + fmt(Math.round(rate * 10) / 10) + "%</span></div>"
+    + '<div class="stat"><span class="k">হাঁস প্রতি খরচ</span><span class="v">' + tk(t.add ? t.exp / t.add : 0) + "</span></div>"
+    + "</div></section>";
+
+  const byCat = {};
+  for (const e of state.entries) if (e.t === "exp") byCat[e.cat] = (byCat[e.cat] || 0) + (e.amount || 0);
+  const cats = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
+  if (cats.length) {
+    const max = cats[0][1] || 1;
+    h += '<section class="card"><h2>টাকা কোন খাতে বেশি খরচ হচ্ছে</h2>';
+    for (const [c, v] of cats) h += '<div class="line-item"><span>' + esc(c) + "</span><b>" + tk(v) + '</b></div><div class="bar exp"><i style="width:' + Math.max(3, (v / max) * 100).toFixed(1) + '%"></i></div>';
+    h += "</section>";
+  }
+  return h;
+}
+
+function entryView(e) {
+  let title = "", sub = [], amt = "", amtCls = "";
+  if (e.t === "exp" || e.t === "inc") {
+    title = e.cat;
+    if (e.qty) sub.push(fmt(e.qty) + " " + (e.unit || ""));
+    if (e.note) sub.push(e.note);
+    amt = (e.t === "exp" ? "− " : "+ ") + tk(e.amount);
+    amtCls = e.t === "exp" ? "neg" : "pos";
+  } else if (e.t === "egg") {
+    title = "ডিম পাওয়া গেছে " + fmt(e.count) + "টি";
+    if (e.broken) sub.push("ভাঙা / নষ্ট " + fmt(e.broken) + "টি");
+    if (e.note) sub.push(e.note);
+  } else if (e.t === "flock") {
+    title = FLOCK[e.kind] + " — " + fmt(e.n) + "টি";
+    if (e.note) sub.push(e.note);
+    amtCls = e.kind === "add" ? "pos" : "neg";
+    amt = (e.kind === "add" ? "+" : "−") + fmt(e.n);
+  } else if (e.t === "vac") {
+    title = e.name;
+    if (e.n) sub.push(fmt(e.n) + "টি হাঁসকে");
+    if (isDate(e.next)) sub.push("পরের ডোজ " + dLong.format(parseISO(e.next)) + (e.done ? " (দেওয়া হয়েছে)" : ""));
+    if (e.note) sub.push(e.note);
+  }
+  return '<li><button type="button" class="entry" data-act="edit" data-id="' + e.id + '"><span class="ic ' + e.t + '">' + ICON[e.t] + '</span><span class="tx"><b>' + esc(title) + "</b>" + (sub.length ? "<span>" + esc(sub.join(" · ")) + "</span>" : "") + '</span><span class="amt ' + amtCls + '">' + esc(amt) + "</span></button></li>";
+}
+
+function listHTML() {
+  const all = inMonth(listMonth);
+  const mt = totals(all);
+  const shown = sortedEntries(listFilter === "all" ? all : all.filter((e) => e.t === listFilter));
+  let h = '<div class="monthnav"><button type="button" class="btn" data-act="prevMonth" aria-label="আগের মাস">‹</button><h2>' + esc(monthLabel(listMonth)) + '</h2><button type="button" class="btn" data-act="nextMonth" aria-label="পরের মাস"' + (listMonth >= curMonth() ? " disabled" : "") + ">›</button></div>";
+  h += '<div class="filter" role="group" aria-label="কোন লেখা দেখাবে">';
+  for (const [k, l] of [["all", "সব"], ["exp", "খরচ"], ["inc", "আয়"], ["egg", "ডিম"], ["flock", "হাঁস"], ["vac", "টিকা"]]) h += '<button type="button" data-act="filter" data-f="' + k + '" aria-pressed="' + (listFilter === k) + '">' + l + "</button>";
+  h += "</div>";
+  h += '<div class="stats" style="margin-bottom:6px"><div class="stat"><span class="k">খরচ</span><span class="v">' + tk(mt.exp) + '</span></div><div class="stat"><span class="k">আয়</span><span class="v">' + tk(mt.inc) + '</span></div><div class="stat"><span class="k">' + (mt.profit < 0 ? "ক্ষতি" : "লাভ") + '</span><span class="v ' + (mt.profit < 0 ? "neg" : mt.profit > 0 ? "pos" : "") + '">' + tk(Math.abs(mt.profit)) + "</span></div></div>";
+  if (!shown.length) return h + '<p class="empty">এই মাসে এখানে কোনো লেখা নেই।<br>নিচের “লিখুন” বোতাম চাপুন।</p>';
+  let day = "";
+  for (const e of shown) {
+    if (e.d !== day) { if (day) h += "</ul>"; day = e.d; h += '<h3 class="day">' + esc(dDay.format(parseISO(e.d))) + '</h3><ul class="entries">'; }
+    h += entryView(e);
+  }
+  return h + "</ul><p class='muted' style='text-align:center;font-size:14px;margin-top:12px'>ভুল হলে লেখার উপর চাপ দিয়ে ঠিক করুন বা মুছুন।</p>";
+}
+
+function monthHTML() {
+  const months = new Set(state.entries.map((e) => monthOf(e.d)));
+  months.add(curMonth());
+  const list = [...months].filter((m) => m <= curMonth()).sort().reverse();
+  const rows = list.map((m) => ({ m, t: totals(inMonth(m)) }));
+  const max = Math.max(1, ...rows.map((r) => Math.max(r.t.exp, r.t.inc)));
+  const all = totals(state.entries);
+  let h = '<h2 style="font-size:22px;margin:6px 0 12px">মাসে মাসে হিসাব</h2>';
+  h += '<section class="card"><h2>শুরু থেকে মোট</h2><div class="stats"><div class="stat"><span class="k">খরচ</span><span class="v">' + tk(all.exp) + '</span></div><div class="stat"><span class="k">আয়</span><span class="v">' + tk(all.inc) + '</span></div><div class="stat"><span class="k">' + (all.profit < 0 ? "ক্ষতি" : "লাভ") + '</span><span class="v ' + (all.profit < 0 ? "neg" : all.profit > 0 ? "pos" : "") + '">' + tk(Math.abs(all.profit)) + "</span></div></div></section>";
+  for (const r of rows) {
+    const p = r.t.profit;
+    h += '<section class="card month-card"><div class="head"><h2>' + esc(monthLabel(r.m)) + '</h2><b class="' + (p < 0 ? "neg" : p > 0 ? "pos" : "") + '">' + (p < 0 ? "ক্ষতি " : p > 0 ? "লাভ " : "") + tk(Math.abs(p)) + "</b></div>"
+      + '<dl><dt>খরচ</dt><dd>' + tk(r.t.exp) + '</dd></dl><div class="bar exp"><i style="width:' + ((r.t.exp / max) * 100).toFixed(1) + '%"></i></div>'
+      + '<dl><dt>আয়</dt><dd>' + tk(r.t.inc) + '</dd></dl><div class="bar inc"><i style="width:' + ((r.t.inc / max) * 100).toFixed(1) + '%"></i></div>'
+      + "<dl><dt>ডিম পাওয়া</dt><dd>" + fmt(r.t.eggs) + "টি</dd><dt>হাঁস মারা গেছে</dt><dd>" + fmt(r.t.dead) + "টি</dd><dt>হাঁস বিক্রি</dt><dd>" + fmt(r.t.sold) + "টি</dd></dl></section>";
+  }
+  return h;
+}
+
+function moreHTML() {
+  const s = state.settings;
+  let h = '<h2 style="font-size:22px;margin:6px 0 12px">সেটিংস ও ব্যাকআপ</h2>';
+  h += '<section class="card"><h2>খামারের তথ্য</h2><form id="settingsForm" novalidate>'
+    + field("set-name", "খামারের নাম", s.farmName, "text")
+    + '<div class="two">' + field("set-date", "প্রথম বাচ্চা আনার তারিখ", s.arrivalDate || "", "date") + field("set-age", "তখন বয়স (দিন)", s.arrivalAge || "", "num") + "</div>"
+    + '<button type="submit" class="btn primary" style="width:100%">সেভ করুন</button></form></section>';
+
+  h += '<section class="card"><h2>ব্যাকআপ</h2><p>সব হিসাব শুধু এই ফোনে জমা থাকে। ফোন হারালে, নষ্ট হলে বা নতুন ফোনে নিতে চাইলে ব্যাকআপ লাগবে। সপ্তাহে একবার ব্যাকআপ নিয়ে WhatsApp বা Google Drive-এ রেখে দিন।</p>'
+    + '<p class="muted">শেষ ব্যাকআপ: ' + (s.lastBackup ? esc(dLong.format(parseISO(s.lastBackup))) : "এখনো নেওয়া হয়নি") + "</p>"
+    + '<div class="btn-row"><button type="button" class="btn primary" data-act="backupShare">ব্যাকআপ পাঠান</button><button type="button" class="btn" data-act="backupSave">ফোনে সেভ করুন</button></div>'
+    + '<p style="margin-top:12px">নতুন ফোনে বা হিসাব মুছে গেলে, ব্যাকআপ ফাইল বেছে নিয়ে সব ফেরত আনুন।</p>'
+    + '<button type="button" class="btn" style="width:100%" data-act="restore">ব্যাকআপ থেকে ফেরত আনুন</button></section>';
+
+  h += '<section class="card"><h2>Excel-এ হিসাব</h2><p>সব লেখা একটি ফাইলে পাবেন, যা Excel বা Google Sheets-এ খোলে।</p><div class="btn-row"><button type="button" class="btn" data-act="csvShare">Excel ফাইল পাঠান</button><button type="button" class="btn" data-act="csvSave">ফোনে সেভ করুন</button></div></section>';
+
+  if (!standalone()) {
+    h += '<section class="card"><h2>ফোনে অ্যাপ হিসেবে বসান</h2>'
+      + (installPrompt ? '<button type="button" class="btn primary" style="width:100%" data-act="install">হোম স্ক্রিনে বসান</button>' : "<p>Chrome-এর ডান দিকের উপরের ⋮ মেনু চাপুন, তারপর “Add to Home screen” বা “Install app” চাপুন।</p>")
+      + "</section>";
+  }
+
+  h += '<section class="card"><h2>সব মুছে নতুন করে শুরু</h2><p class="muted">আগে ব্যাকআপ নিয়ে নিন। মুছে ফেললে ফেরত আনা যাবে না।</p><button type="button" class="btn danger" style="width:100%" data-act="wipe">সব হিসাব মুছে ফেলুন</button></section>';
+  h += '<footer class="note">হাঁসের খামারের হিসাব · সংস্করণ ১.০ · হিসাব শুধু এই ফোনে থাকে, কোথাও পাঠানো হয় না।</footer>';
+  return h;
+}
+
+function renderOnboarding(view) {
+  $("top").hidden = true; $("tabs").hidden = true; $("fab").hidden = true;
+  view.className = "";
+  view.innerHTML = '<div class="onb"><img class="logo" src="icon-192.png" alt=""><h1>হাঁসের খামারের হিসাব</h1>'
+    + '<p class="muted">খরচ, আয়, ডিম, হাঁসের সংখ্যা আর টিকার হিসাব এক জায়গায়। শুরু করতে নিচের ঘরগুলো দেখে নিন।</p>'
+    + '<form id="onbForm" novalidate class="card">'
+    + field("onb-name", "খামারের নাম", "আমার হাঁসের খামার", "text")
+    + field("onb-count", "শুরুতে কয়টি হাঁস / বাচ্চা?", "20", "num")
+    + '<div class="two">' + field("onb-date", "কবে আনা হয়েছে?", todayISO(), "date") + field("onb-age", "তখন বয়স (দিন)", "1", "num") + "</div>"
+    + '<p class="err" id="onb-err" role="alert"></p>'
+    + '<button type="submit" class="btn primary" style="width:100%">শুরু করি</button></form>'
+    + '<p class="muted">আগে ব্যাকআপ নিয়ে থাকলে:</p><button type="button" class="btn" style="width:100%" data-act="restore">ব্যাকআপ থেকে ফেরত আনুন</button></div>';
+}
+
+/* ---------- form building ---------- */
+function field(id, label, value, kind, hint) {
+  const v = value == null ? "" : value;
+  const input = kind === "date"
+    ? '<input type="date" id="' + id + '" value="' + esc(v) + '">'
+    : kind === "num"
+      ? '<input type="text" inputmode="decimal" autocomplete="off" id="' + id + '" value="' + esc(v) + '">'
+      : '<input type="text" autocomplete="off" id="' + id + '" value="' + esc(v) + '">';
+  return '<label class="field" for="' + id + '"><span>' + esc(label) + (hint ? "<small>" + esc(hint) + "</small>" : "") + "</span>" + input + "</label>";
+}
+function chips(name, legend, options, value) {
+  let h = '<fieldset class="chips"><legend>' + esc(legend) + '</legend><div class="chipset">';
+  options.forEach((o, i) => {
+    const val = typeof o === "string" ? o : o[0];
+    const lab = typeof o === "string" ? o : o[1];
+    h += '<label class="chip"><input type="radio" name="' + name + '" id="' + name + "-" + i + '" value="' + esc(val) + '"' + (val === value ? " checked" : "") + "><span>" + esc(lab) + "</span></label>";
+  });
+  return h + "</div></fieldset>";
+}
+const radio = (name) => { const r = document.querySelector('input[name="' + name + '"]:checked'); return r ? r.value : ""; };
+const val = (id) => ($(id) ? $(id).value.trim() : "");
+
+let editing = null; // entry being edited
+function openForm(type, entry) {
+  editing = entry || null;
+  const e = entry || {};
+  const date = e.d || todayISO();
+  let body = "";
+  if (type === "exp" || type === "inc") {
+    body += field("f-date", "তারিখ", date, "date");
+    body += chips("f-cat", type === "exp" ? "কিসের খরচ?" : "কিসের আয়?", type === "exp" ? EXP_CATS : INC_CATS, e.cat);
+    body += field("f-amount", "মোট টাকা", e.amount, "num");
+    body += '<div class="two">' + field("f-qty", "পরিমাণ (না দিলেও চলবে)", e.qty || "", "num") + "<div></div></div>";
+    body += chips("f-unit", "একক (না দিলেও চলবে)", UNITS, e.unit);
+    body += field("f-note", type === "exp" ? "বিবরণ (যেমন: দোকানের নাম)" : "ক্রেতা / বিবরণ", e.note, "text");
+  } else if (type === "egg") {
+    body += field("f-date", "তারিখ", date, "date");
+    body += '<div class="two">' + field("f-count", "কয়টি ডিম পাওয়া গেছে?", e.count, "num") + field("f-broken", "ভাঙা / নষ্ট", e.broken, "num") + "</div>";
+    body += field("f-note", "মন্তব্য", e.note, "text");
+  } else if (type === "flock") {
+    body += field("f-date", "তারিখ", date, "date");
+    body += chips("f-kind", "কী হয়েছে?", Object.entries(FLOCK), e.kind);
+    body += field("f-n", "কয়টি হাঁস?", e.n, "num");
+    if (!entry) body += '<div id="saleBox" hidden>' + field("f-sale", "বিক্রির মোট টাকা", "", "num", "দিলে “আয়” খাতায় নিজে থেকে যোগ হবে") + "</div>";
+    body += field("f-note", "কারণ / মন্তব্য (যেমন: অসুখে মারা গেছে)", e.note, "text");
+  } else if (type === "vac") {
+    body += field("f-date", "কবে দেওয়া হলো", date, "date");
+    body += field("f-name", "টিকা / ওষুধের নাম", e.name, "text");
+    body += '<div class="chipset" style="margin:-4px 0 12px">' + VAC_SUGGEST.map((s) => '<button type="button" class="chip-btn" data-act="fillName" data-v="' + esc(s) + '">' + esc(s) + "</button>").join("") + "</div>";
+    body += '<div class="two">' + field("f-n", "কয়টি হাঁসকে", e.n || "", "num") + field("f-next", "পরের ডোজ কবে", e.next || "", "date") + "</div>";
+    if (!entry) body += field("f-cost", "দাম (টাকা)", "", "num", "দিলে “খরচ” খাতায় নিজে থেকে যোগ হবে");
+    body += field("f-note", "কে দিলেন / মন্তব্য", e.note, "text");
+    body += '<p class="hint">কোন বয়সে কোন টিকা ও কত মাত্রা — উপজেলা প্রাণিসম্পদ অফিস বা পশু ডাক্তারের কাছ থেকে জেনে নিন।</p>';
+  }
+  const title = (entry ? "ঠিক করুন: " : "") + TYPES[type];
+  const html = '<header class="sheet-h"><h2 id="sheetTitle">' + esc(title) + '</h2><button type="button" class="x" data-act="close" aria-label="বন্ধ করুন">✕</button></header>'
+    + '<form id="entryForm" data-type="' + type + '" novalidate>' + body
+    + '<p class="err" id="f-err" role="alert"></p><div class="sheet-actions">'
+    + (entry ? '<button type="button" class="btn danger" data-act="delete">মুছুন</button>' : "")
+    + '<button type="submit" class="btn primary">সেভ করুন</button></div></form>';
+  openSheet(html);
+}
+
+function openPicker() {
+  let h = '<header class="sheet-h"><h2 id="sheetTitle">কী লিখবেন?</h2><button type="button" class="x" data-act="close" aria-label="বন্ধ করুন">✕</button></header><div class="pick">';
+  const help = { exp: "খাবার, ওষুধ, বাচ্চা কেনা…", inc: "ডিম বা হাঁস বিক্রি…", egg: "আজ কয়টি ডিম পেলেন", flock: "মারা গেছে, বিক্রি, নতুন যোগ", vac: "টিকা বা ওষুধ দিলেন" };
+  for (const k of ["exp", "inc", "egg", "flock", "vac"]) h += '<button type="button" class="act ' + k + '" data-act="form" data-type="' + k + '">' + ICON[k] + '<span style="text-align:left">' + esc(TYPES[k]) + '<br><small class="muted" style="font-weight:400;font-size:14px">' + esc(help[k]) + "</small></span></button>";
+  openSheet(h + "</div>");
+}
+
+/* ---------- saving ---------- */
+function upsert(entry) {
+  const i = state.entries.findIndex((x) => x.id === entry.id);
+  if (i >= 0) state.entries[i] = entry; else state.entries.push(entry);
+}
+function formError(msg) { $("f-err").textContent = msg; }
+
+function saveEntry(form) {
+  const type = form.dataset.type;
+  const d = val("f-date");
+  if (!isDate(d)) return formError("তারিখ দিন।");
+  if (d > todayISO()) return formError("ভবিষ্যতের তারিখ দেওয়া যাবে না।");
+  const base = { id: editing ? editing.id : uid(), c: editing ? editing.c : Date.now(), t: type, d };
+  const note = val("f-note");
+  let extra = null, msg = "সেভ হয়েছে";
+  let entry;
+  if (type === "exp" || type === "inc") {
+    const cat = radio("f-cat");
+    if (!cat) return formError(type === "exp" ? "কিসের খরচ তা বেছে নিন।" : "কিসের আয় তা বেছে নিন।");
+    const amount = toNum(val("f-amount"));
+    if (!(amount > 0)) return formError("মোট টাকা লিখুন।");
+    const qtyRaw = val("f-qty"); const qty = qtyRaw ? toNum(qtyRaw) : 0;
+    if (qtyRaw && !(qty > 0)) return formError("পরিমাণ শুধু সংখ্যায় লিখুন।");
+    entry = Object.assign(base, { cat, amount: Math.round(amount * 100) / 100, qty: qty || 0, unit: qty ? radio("f-unit") : "", note });
+  } else if (type === "egg") {
+    const count = toNum(val("f-count"));
+    if (!(count >= 0) || !Number.isInteger(count)) return formError("কয়টি ডিম পাওয়া গেছে লিখুন।");
+    const bRaw = val("f-broken"); const broken = bRaw ? toNum(bRaw) : 0;
+    if (!(broken >= 0) || !Number.isInteger(broken) || broken > count) return formError("ভাঙা ডিম মোট ডিমের চেয়ে বেশি হতে পারে না।");
+    entry = Object.assign(base, { count, broken, note });
+  } else if (type === "flock") {
+    const kind = radio("f-kind");
+    if (!kind) return formError("কী হয়েছে তা বেছে নিন।");
+    const n = toNum(val("f-n"));
+    if (!(n > 0) || !Number.isInteger(n)) return formError("কয়টি হাঁস তা লিখুন।");
+    if (kind !== "add") {
+      const others = state.entries.filter((x) => x.id !== base.id);
+      const now = totals(others).now;
+      if (n > now) return formError("খামারে এখন " + fmt(now) + "টি হাঁস আছে — এর বেশি কমানো যাবে না।");
+    }
+    entry = Object.assign(base, { kind, n, note });
+    const sale = val("f-sale");
+    if (!editing && kind === "sold" && sale) {
+      const amount = toNum(sale);
+      if (!(amount > 0)) return formError("বিক্রির টাকা শুধু সংখ্যায় লিখুন।");
+      extra = { id: uid(), c: Date.now() + 1, t: "inc", d, cat: "হাঁস বিক্রি", amount: Math.round(amount * 100) / 100, qty: n, unit: "টি", note };
+      msg = "সেভ হয়েছে — আয় খাতাতেও যোগ হলো";
+    }
+  } else if (type === "vac") {
+    const name = val("f-name");
+    if (!name) return formError("টিকা বা ওষুধের নাম লিখুন।");
+    const nRaw = val("f-n"); const n = nRaw ? toNum(nRaw) : 0;
+    if (nRaw && !(n > 0)) return formError("হাঁসের সংখ্যা শুধু সংখ্যায় লিখুন।");
+    const next = val("f-next");
+    if (next && next <= d) return formError("পরের ডোজের তারিখ আজকের পরে হতে হবে।");
+    entry = Object.assign(base, { name, n: n || 0, next: next || "", done: editing ? !!editing.done : false, note });
+    const cost = val("f-cost");
+    if (!editing && cost) {
+      const amount = toNum(cost);
+      if (!(amount > 0)) return formError("দাম শুধু সংখ্যায় লিখুন।");
+      extra = { id: uid(), c: Date.now() + 1, t: "exp", d, cat: "ওষুধ ও টিকা", amount: Math.round(amount * 100) / 100, qty: 0, unit: "", note: name };
+      msg = "সেভ হয়েছে — খরচ খাতাতেও যোগ হলো";
+    }
+  }
+  upsert(entry);
+  if (extra) upsert(extra);
+  persist();
+  closeSheet();
+  listMonth = monthOf(d);
+  render();
+  toast(storageOK ? msg : "সেভ হয়নি — ব্রাউজারে জায়গা নেই");
+}
+
+/* ---------- sheets, dialogs, toast ---------- */
+let sheetOpen = false;
+function openSheet(html) {
+  $("sheet").innerHTML = html;
+  const w = $("sheetWrap");
+  w.hidden = false;
+  requestAnimationFrame(() => w.classList.add("open"));
+  if (!sheetOpen) { sheetOpen = true; try { history.pushState({ sheet: 1 }, ""); } catch (e) { /* ignore */ } }
+  const f = $("sheet").querySelector("input:not([type=date]):not([type=radio]), button.act");
+  if (f && f.tagName === "BUTTON") f.focus();
+}
+function closeSheet(viaBack) {
+  if (!sheetOpen) return;
+  sheetOpen = false;
+  editing = null;
+  const w = $("sheetWrap");
+  w.classList.remove("open");
+  setTimeout(() => { if (!sheetOpen) { w.hidden = true; $("sheet").innerHTML = ""; } }, 180);
+  if (!viaBack) { try { history.back(); } catch (e) { /* ignore */ } }
+}
+window.addEventListener("popstate", () => { if (sheetOpen) closeSheet(true); });
+
+let dlgToken = 0;
+function ask(message, okLabel, danger) {
+  return new Promise((resolve) => {
+    const w = $("dlgWrap");
+    const my = ++dlgToken;
+    $("dlg").innerHTML = '<p style="font-size:18px;margin:4px 0 16px">' + esc(message) + '</p><div class="sheet-actions"><button type="button" class="btn" id="dlg-no">না, থাক</button><button type="button" class="btn ' + (danger ? "danger" : "primary") + '" style="flex:1" id="dlg-yes">' + esc(okLabel) + "</button></div>";
+    w.hidden = false;
+    requestAnimationFrame(() => w.classList.add("open"));
+    const done = (v) => { w.classList.remove("open"); setTimeout(() => { if (dlgToken === my) w.hidden = true; }, 180); resolve(v); };
+    $("dlg-no").onclick = () => done(false);
+    $("dlg-yes").onclick = () => done(true);
+    $("dlg-no").focus();
+  });
+}
+
+let toastTimer = 0;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+}
+
+/* ---------- backup, restore, Excel ---------- */
+function saveFile(name, text, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+async function shareFile(name, text, mime) {
+  try {
+    const file = new File([text], name, { type: mime });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: name });
+      return "shared";
+    }
+  } catch (e) {
+    if (e && e.name === "AbortError") return "cancelled";
+  }
+  saveFile(name, text, mime);
+  return "saved";
+}
+function backupText() { return JSON.stringify({ app: "hasher-khamar", v: 1, exportedAt: new Date().toISOString(), state }, null, 1); }
+function markBackup() { state.settings.lastBackup = todayISO(); persist(); render(); }
+async function doBackup(share) {
+  const name = "hasher-khamar-backup-" + todayISO() + ".json";
+  const r = share ? await shareFile(name, backupText(), "application/json") : (saveFile(name, backupText(), "application/json"), "saved");
+  if (r === "cancelled") return;
+  markBackup();
+  toast(r === "shared" ? "ব্যাকআপ পাঠানো হয়েছে" : "ব্যাকআপ ফাইল ফোনের Download ফোল্ডারে সেভ হয়েছে");
+}
+function csvText() {
+  const q = (v) => { const s = String(v == null ? "" : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const rows = [["তারিখ", "কী", "খাত / বিষয়", "টাকা", "পরিমাণ", "একক", "ডিম", "ভাঙা ডিম", "হাঁসের সংখ্যা", "পরের ডোজ", "মন্তব্য"]];
+  const list = state.entries.slice().sort((a, b) => (a.d > b.d ? 1 : a.d < b.d ? -1 : (a.c || 0) - (b.c || 0)));
+  for (const e of list) {
+    if (e.t === "exp" || e.t === "inc") rows.push([e.d, TYPES[e.t], e.cat, e.amount, e.qty || "", e.unit || "", "", "", "", "", e.note || ""]);
+    else if (e.t === "egg") rows.push([e.d, "ডিম", "", "", "", "", e.count, e.broken || 0, "", "", e.note || ""]);
+    else if (e.t === "flock") rows.push([e.d, "হাঁস", FLOCK[e.kind], "", "", "", "", "", (e.kind === "add" ? "" : "-") + e.n, "", e.note || ""]);
+    else if (e.t === "vac") rows.push([e.d, "টিকা / ওষুধ", e.name, "", "", "", "", "", e.n || "", e.next || "", e.note || ""]);
+  }
+  return "﻿" + rows.map((r) => r.map(q).join(",")).join("\r\n");
+}
+async function doCsv(share) {
+  const name = "hasher-khamar-hisab-" + todayISO() + ".csv";
+  const r = share ? await shareFile(name, csvText(), "text/csv") : (saveFile(name, csvText(), "text/csv"), "saved");
+  if (r === "cancelled") return;
+  toast(r === "shared" ? "Excel ফাইল পাঠানো হয়েছে" : "Excel ফাইল Download ফোল্ডারে সেভ হয়েছে");
+}
+function cleanState(s) {
+  if (!s || typeof s !== "object" || !Array.isArray(s.entries) || !s.settings) return null;
+  const okT = { exp: 1, inc: 1, egg: 1, flock: 1, vac: 1 };
+  const entries = s.entries.filter((e) => e && okT[e.t] && isDate(e.d) && typeof e.id === "string").map((e) => {
+    const n = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+    const str = (v) => (typeof v === "string" ? v.slice(0, 300) : "");
+    const o = { id: e.id.slice(0, 40), c: n(e.c), t: e.t, d: e.d, note: str(e.note) };
+    if (e.t === "exp" || e.t === "inc") Object.assign(o, { cat: str(e.cat), amount: n(e.amount), qty: n(e.qty), unit: str(e.unit) });
+    if (e.t === "egg") Object.assign(o, { count: n(e.count), broken: n(e.broken) });
+    if (e.t === "flock") { if (!FLOCK[e.kind]) return null; Object.assign(o, { kind: e.kind, n: n(e.n) }); }
+    if (e.t === "vac") Object.assign(o, { name: str(e.name), n: n(e.n), next: isDate(e.next) ? e.next : "", done: !!e.done });
+    return o;
+  }).filter(Boolean);
+  const st = s.settings;
+  return { v: 1, settings: { farmName: typeof st.farmName === "string" ? st.farmName.slice(0, 80) : "আমার হাঁসের খামার", arrivalDate: isDate(st.arrivalDate) ? st.arrivalDate : "", arrivalAge: Number.isFinite(Number(st.arrivalAge)) ? Number(st.arrivalAge) : 0, lastBackup: isDate(st.lastBackup) ? st.lastBackup : "" }, entries };
+}
+$("restoreInput").addEventListener("change", async (ev) => {
+  const file = ev.target.files && ev.target.files[0];
+  ev.target.value = "";
+  if (!file) return;
+  let data = null;
+  try { data = JSON.parse(await file.text()); } catch (e) { /* handled below */ }
+  const s = data && data.app === "hasher-khamar" ? cleanState(data.state) : null;
+  if (!s) { toast("এটি এই অ্যাপের ব্যাকআপ ফাইল নয়"); return; }
+  if (state && state.entries.length) {
+    const ok = await ask("এই ফোনের এখনকার হিসাব মুছে ব্যাকআপের " + fmt(s.entries.length) + "টি লেখা বসবে। ঠিক আছে?", "হ্যাঁ, ফেরত আনুন", true);
+    if (!ok) return;
+  }
+  state = s;
+  persist();
+  tab = "home";
+  render();
+  toast(fmt(s.entries.length) + "টি লেখা ফেরত আনা হয়েছে");
+});
+
+/* ---------- events ---------- */
+document.addEventListener("click", async (ev) => {
+  const el = ev.target.closest("[data-act]");
+  if (!el) {
+    if (ev.target === $("sheetWrap")) closeSheet();
+    return;
+  }
+  const act = el.dataset.act;
+  if (act === "tab") { tab = el.dataset.tab; if (tab === "list") listMonth = listMonth || curMonth(); render(); window.scrollTo(0, 0); }
+  else if (act === "pick") openPicker();
+  else if (act === "form") openForm(el.dataset.type);
+  else if (act === "close") closeSheet();
+  else if (act === "edit") { const e = state.entries.find((x) => x.id === el.dataset.id); if (e) openForm(e.t, e); }
+  else if (act === "delete") {
+    if (!editing) return;
+    const id = editing.id;
+    const ok = await ask("এই লেখাটি মুছে ফেলবেন?", "হ্যাঁ, মুছুন", true);
+    if (!ok) return;
+    state.entries = state.entries.filter((x) => x.id !== id);
+    persist(); closeSheet(); render(); toast("মুছে ফেলা হয়েছে");
+  }
+  else if (act === "prevMonth") { listMonth = shiftMonth(listMonth, -1); render(); }
+  else if (act === "nextMonth") { if (listMonth < curMonth()) { listMonth = shiftMonth(listMonth, 1); render(); } }
+  else if (act === "filter") { listFilter = el.dataset.f; render(); }
+  else if (act === "fillName") { $("f-name").value = el.dataset.v; }
+  else if (act === "vacDone") {
+    const e = state.entries.find((x) => x.id === el.dataset.id);
+    if (!e) return;
+    e.done = true; persist(); render();
+    openForm("vac", null);
+    $("f-name").value = e.name;
+    toast("এবারের ডোজটি লিখে সেভ করুন");
+  }
+  else if (act === "backupShare") doBackup(true);
+  else if (act === "backupSave") doBackup(false);
+  else if (act === "csvShare") doCsv(true);
+  else if (act === "csvSave") doCsv(false);
+  else if (act === "restore") $("restoreInput").click();
+  else if (act === "install") {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    try { await installPrompt.userChoice; } catch (e) { /* ignore */ }
+    installPrompt = null; render();
+  }
+  else if (act === "wipe") {
+    const ok = await ask("সব হিসাব চিরতরে মুছে যাবে। ব্যাকআপ নিয়েছেন তো?", "হ্যাঁ, সব মুছুন", true);
+    if (!ok) return;
+    const ok2 = await ask("আবার জিজ্ঞেস করছি — সত্যিই সব মুছে ফেলবেন?", "সব মুছুন", true);
+    if (!ok2) return;
+    try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ }
+    state = null; tab = "home"; render();
+  }
+});
+
+document.addEventListener("change", (ev) => {
+  if (ev.target.name === "f-kind") { const b = $("saleBox"); if (b) b.hidden = ev.target.value !== "sold"; }
+});
+
+document.addEventListener("submit", (ev) => {
+  ev.preventDefault();
+  const f = ev.target;
+  if (f.id === "entryForm") saveEntry(f);
+  else if (f.id === "settingsForm") {
+    const name = val("set-name") || "আমার হাঁসের খামার";
+    const d = val("set-date");
+    const ageRaw = val("set-age"); const age = ageRaw ? toNum(ageRaw) : 0;
+    if (ageRaw && !(age >= 0)) { toast("বয়স শুধু সংখ্যায় লিখুন"); return; }
+    state.settings.farmName = name.slice(0, 80);
+    state.settings.arrivalDate = isDate(d) ? d : "";
+    state.settings.arrivalAge = Math.round(age || 0);
+    persist(); render(); toast("সেভ হয়েছে");
+  } else if (f.id === "onbForm") {
+    const name = val("onb-name") || "আমার হাঁসের খামার";
+    const count = toNum(val("onb-count") || "0");
+    const d = val("onb-date");
+    const age = toNum(val("onb-age") || "0");
+    const err = $("onb-err");
+    if (!(count >= 0) || !Number.isInteger(count)) { err.textContent = "হাঁসের সংখ্যা শুধু সংখ্যায় লিখুন।"; return; }
+    if (!isDate(d)) { err.textContent = "তারিখ দিন।"; return; }
+    if (!(age >= 0)) { err.textContent = "বয়স শুধু সংখ্যায় লিখুন।"; return; }
+    state = { v: 1, settings: { farmName: name.slice(0, 80), arrivalDate: d, arrivalAge: Math.round(age), lastBackup: "" }, entries: [] };
+    if (count > 0) state.entries.push({ id: uid(), c: Date.now(), t: "flock", d, kind: "add", n: count, note: "শুরুর হাঁস / বাচ্চা" });
+    persist();
+    $("view").className = "wrap";
+    tab = "home"; render();
+    toast("খাতা তৈরি হয়েছে");
+  }
+});
+
+document.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && sheetOpen) closeSheet(); });
+
+window.addEventListener("beforeinstallprompt", (ev) => { ev.preventDefault(); installPrompt = ev; if (state) render(); });
+window.addEventListener("appinstalled", () => { installPrompt = null; toast("অ্যাপ ফোনে বসানো হয়েছে"); if (state) render(); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden && state && !sheetOpen) render(); });
+
+/* ---------- start ---------- */
+state = cleanState(load());
+if (state) $("view").className = "wrap";
+render();
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+  navigator.serviceWorker.register("sw.js").catch(() => { /* app still works online */ });
+}
+})();
+</script>
+</body>
+</html>
