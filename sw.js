@@ -1,6 +1,6 @@
 // Offline support: keeps the app files on the phone so it opens without internet.
 // The farm records themselves are saved in the phone's browser storage, not here.
-const CACHE = "hasher-khamar-v1";
+const CACHE = "hasher-khamar-v2";
 const FILES = [
   "./",
   "index.html",
