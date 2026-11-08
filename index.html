@@ -173,6 +173,43 @@ fieldset.chips legend{font-weight:600;margin-bottom:6px;padding:0}
 .onb .logo{width:72px;height:72px;border-radius:18px}
 .onb h1{font-size:28px;font-weight:600;margin:12px 0 4px}
 footer.note{color:var(--muted);font-size:13px;text-align:center;margin-top:10px}
+/* ---- v2.1 look ---- */
+body{background:linear-gradient(180deg,var(--accent-soft) 0,var(--bg) 220px) no-repeat,var(--bg)}
+.top{background:transparent;backdrop-filter:blur(8px)}
+.card{border:0;box-shadow:0 1px 2px rgba(20,50,30,.06),0 4px 14px rgba(20,50,30,.06)}
+.card h2{font-size:17px}
+.hero{background:linear-gradient(135deg,#2F7D4F 0%,#1F6A40 60%,#185733 100%);color:#fff;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(31,106,64,.28)}
+.hero::after{content:"";position:absolute;right:-40px;bottom:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hero-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hero .age{background:rgba(255,255,255,.16);border-radius:999px;padding:2px 10px;font-size:14px}
+.hero .big{font-size:52px}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;position:relative;z-index:1}
+.pills span{background:rgba(255,255,255,.14);border-radius:999px;padding:3px 10px;font-size:14px}
+.act{border:0;box-shadow:0 1px 2px rgba(20,50,30,.06),0 4px 12px rgba(20,50,30,.05)}
+.act svg{width:32px;height:32px;padding:6px;border-radius:12px;box-sizing:content-box}
+.act.exp svg{background:var(--bad-soft)} .act.inc svg{background:var(--accent-soft)} .act.egg svg{background:var(--amber-soft)} .act.flock svg{background:var(--accent-soft)} .act.vac svg{background:var(--warn-soft)}
+.actions .act:last-child svg{background:var(--surface-2)}
+.tasks{border-left:4px solid var(--amber)}
+.ms-head{display:flex;justify-content:space-between;align-items:center}
+.tag{border-radius:999px;padding:2px 12px;font-size:14px;font-weight:600}
+.tag.pos{background:var(--accent-soft);color:var(--good)} .tag.neg{background:var(--bad-soft);color:var(--bad)}
+.ms-big{font-size:34px;font-weight:600;margin:2px 0 8px}
+.ms .stats{margin-top:6px}
+.bar{height:10px;border-radius:5px}
+.chart{display:flex;align-items:flex-end;gap:10px;height:160px;padding-top:6px}
+.chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}
+.chart .bars{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;gap:3px;border-bottom:1px solid var(--line)}
+.chart .bars i{width:40%;max-width:18px;min-height:2px;border-radius:4px 4px 0 0}
+.chart span{font-size:13px;color:var(--muted)}
+i.inc{background:var(--good)} i.exp{background:var(--bad)}
+.legend{display:flex;gap:16px;font-size:14px;color:var(--muted);margin:8px 0 0}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+.tabs{box-shadow:0 -4px 16px rgba(20,50,30,.06);border-top:0}
+.tabs button svg{padding:3px 16px;border-radius:999px;box-sizing:content-box}
+.tabs button[aria-current="page"] svg{background:var(--accent-soft)}
+.entry{border:0;box-shadow:0 1px 2px rgba(20,50,30,.06)}
+.sheet{box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+@media (prefers-color-scheme:dark){.hero{background:linear-gradient(135deg,#246B41,#17492C)} .card,.act,.entry{box-shadow:none;border:1px solid var(--line)}}
 @media (max-width:360px){.actions{grid-template-columns:repeat(2,1fr)} .stats{grid-template-columns:1fr 1fr} .stat.wide{grid-column:span 2} .hero .big{font-size:38px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -344,10 +381,12 @@ function homeHTML() {
   const mt = totals(inMonth(m));
   const todayEggs = state.entries.filter((e) => e.t === "egg" && e.d === todayISO()).reduce((s, e) => s + (e.count || 0), 0);
   let h = "";
-  h += '<section class="hero" aria-label="হাঁসের সংখ্যা">'
-    + '<p class="eyebrow">এখন খামারে আছে</p>'
-    + '<p class="big">' + fmt(t.now) + ' <small>টি হাঁস</small></p>'
-    + '<p class="sub">' + (lb.length > 1 ? fmt(lb.length) + "টি ব্যাচ · " : age != null ? "বয়স " + ageText(age) + " · " : "") + "মারা গেছে " + fmt(t.dead) + " · বিক্রি " + fmt(t.sold) + "</p></section>";
+  h += '<section class="hero" aria-label="হাঁসের সংখ্যা"><div class="hero-top"><p class="eyebrow">এখন খামারে আছে</p>'
+    + (age != null ? '<span class="age">বয়স ' + ageText(age) + "</span>" : "") + "</div>"
+    + '<p class="big">' + fmt(t.now) + ' <small>টি হাঁস</small></p><div class="pills">'
+    + (lb.length > 1 ? "<span>" + fmt(lb.length) + "টি ব্যাচ</span>" : "")
+    + "<span>মারা গেছে " + fmt(t.dead) + "</span><span>বিক্রি " + fmt(t.sold) + "</span>"
+    + "<span>আজ ডিম " + fmt(todayEggs) + "</span></div></section>";
 
   for (const a of vacAlerts()) {
     const late = a.left < 0;
@@ -372,11 +411,12 @@ function homeHTML() {
   h += "</section>";
 
   h += batchesHTML();
-  h += '<section class="card"><h2>' + esc(monthLabel(m)) + "</h2>"
+  const mmax = Math.max(1, mt.inc, mt.exp);
+  h += '<section class="card ms"><div class="ms-head"><h2>' + esc(monthLabel(m)) + '</h2><span class="tag ' + (mt.profit < 0 ? "neg" : "pos") + '">' + (mt.profit < 0 ? "ক্ষতি" : "লাভ") + "</span></div>"
+    + '<p class="ms-big ' + (mt.profit < 0 ? "neg" : mt.profit > 0 ? "pos" : "") + '">' + tk(Math.abs(mt.profit)) + "</p>"
+    + '<div class="line-item"><span>আয়</span><b>' + tk(mt.inc) + '</b></div><div class="bar inc"><i style="width:' + ((mt.inc / mmax) * 100).toFixed(1) + '%"></i></div>'
+    + '<div class="line-item"><span>খরচ</span><b>' + tk(mt.exp) + '</b></div><div class="bar exp"><i style="width:' + ((mt.exp / mmax) * 100).toFixed(1) + '%"></i></div>'
     + '<div class="stats">'
-    + '<div class="stat"><span class="k">খরচ</span><span class="v">' + tk(mt.exp) + "</span></div>"
-    + '<div class="stat"><span class="k">আয়</span><span class="v">' + tk(mt.inc) + "</span></div>"
-    + '<div class="stat"><span class="k">' + (mt.profit < 0 ? "ক্ষতি" : "লাভ") + '</span><span class="v ' + (mt.profit < 0 ? "neg" : mt.profit > 0 ? "pos" : "") + '">' + tk(Math.abs(mt.profit)) + "</span></div>"
     + '<div class="stat"><span class="k">আজ ডিম</span><span class="v">' + fmt(todayEggs) + "</span></div>"
     + '<div class="stat"><span class="k">এ মাসে ডিম</span><span class="v">' + fmt(mt.eggs) + "</span></div>"
     + '<div class="stat"><span class="k">এ মাসে মারা</span><span class="v">' + fmt(mt.dead) + "</span></div>"
@@ -506,6 +546,10 @@ function monthHTML() {
   const max = Math.max(1, ...rows.map((r) => Math.max(r.t.exp, r.t.inc)));
   const all = totals(state.entries);
   let h = '<h2 style="font-size:22px;margin:6px 0 12px">মাসে মাসে হিসাব</h2>';
+  const last6 = rows.slice(0, 6).reverse();
+  h += '<section class="card"><h2>আয় আর খরচ</h2><div class="chart" role="img" aria-label="শেষ কয়েক মাসের আয় ও খরচ">';
+  for (const r of last6) h += '<div class="col"><div class="bars"><i class="inc" style="height:' + ((r.t.inc / max) * 100).toFixed(1) + '%"></i><i class="exp" style="height:' + ((r.t.exp / max) * 100).toFixed(1) + '%"></i></div><span>' + esc(monthLabel(r.m).split(" ")[0]) + "</span></div>";
+  h += '</div><p class="legend"><span><i class="inc"></i>আয়</span><span><i class="exp"></i>খরচ</span></p></section>';
   h += '<section class="card"><h2>শুরু থেকে মোট</h2><div class="stats"><div class="stat"><span class="k">খরচ</span><span class="v">' + tk(all.exp) + '</span></div><div class="stat"><span class="k">আয়</span><span class="v">' + tk(all.inc) + '</span></div><div class="stat"><span class="k">' + (all.profit < 0 ? "ক্ষতি" : "লাভ") + '</span><span class="v ' + (all.profit < 0 ? "neg" : all.profit > 0 ? "pos" : "") + '">' + tk(Math.abs(all.profit)) + "</span></div></div></section>";
   for (const r of rows) {
     const p = r.t.profit;
@@ -541,7 +585,7 @@ function moreHTML() {
   }
 
   h += '<section class="card"><h2>সব মুছে নতুন করে শুরু</h2><p class="muted">আগে ব্যাকআপ নিয়ে নিন। মুছে ফেললে ফেরত আনা যাবে না।</p><button type="button" class="btn danger" style="width:100%" data-act="wipe">সব হিসাব মুছে ফেলুন</button></section>';
-  h += '<footer class="note">হাঁসের খামারের হিসাব · সংস্করণ ২.০ · হিসাব শুধু এই ফোনে থাকে, কোথাও পাঠানো হয় না।</footer>';
+  h += '<footer class="note">হাঁসের খামারের হিসাব · সংস্করণ ২.১ · হিসাব শুধু এই ফোনে থাকে, কোথাও পাঠানো হয় না।</footer>';
   return h;
 }
 
