@@ -146,7 +146,7 @@ fieldset.chips legend{font-weight:600;margin-bottom:6px;padding:0}
 .hint{background:var(--surface-2);border-radius:10px;padding:8px 12px;font-size:15px;margin:0 0 12px}
 
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
-.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
 .tabs button{border:0;background:none;padding:8px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:14px;color:var(--muted);min-height:60px;cursor:pointer}
 .tabs button svg{width:24px;height:24px}
 .tabs button[aria-current="page"]{color:var(--accent);font-weight:600}
@@ -175,7 +175,7 @@ fieldset.chips legend{font-weight:600;margin-bottom:6px;padding:0}
 footer.note{color:var(--muted);font-size:13px;text-align:center;margin-top:10px}
 /* ---- v2.1 look ---- */
 body{background:linear-gradient(180deg,var(--accent-soft) 0,var(--bg) 220px) no-repeat,var(--bg)}
-.top{background:transparent;backdrop-filter:blur(8px)}
+.top{background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);box-shadow:0 1px 0 var(--line)}
 .card{border:0;box-shadow:0 1px 2px rgba(20,50,30,.06),0 4px 14px rgba(20,50,30,.06)}
 .card h2{font-size:17px}
 .hero{background:linear-gradient(135deg,#2F7D4F 0%,#1F6A40 60%,#185733 100%);color:#fff;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(31,106,64,.28)}
@@ -210,6 +210,25 @@ i.inc{background:var(--good)} i.exp{background:var(--bad)}
 .entry{border:0;box-shadow:0 1px 2px rgba(20,50,30,.06)}
 .sheet{box-shadow:0 -8px 30px rgba(0,0,0,.18)}
 @media (prefers-color-scheme:dark){.hero{background:linear-gradient(135deg,#246B41,#17492C)} .card,.act,.entry{box-shadow:none;border:1px solid var(--line)}}
+.book{padding:0;margin-bottom:8px}
+.book summary{padding:14px 16px;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:8px}
+.book summary::-webkit-details-marker{display:none}
+.book summary::after{content:"+";font-size:22px;line-height:1;color:var(--accent)}
+.book[open] summary::after{content:"−"}
+.book-b{padding:0 16px 12px}
+.book-b ul,.book-b ol{padding-left:20px;margin:0 0 8px}
+.book-b li{margin-bottom:6px}
+.book-b p{margin:0 0 8px}
+.tbl{width:100%;border-collapse:collapse;font-size:15px;margin:6px 0 10px}
+.tbl th,.tbl td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.tbl th{background:var(--surface-2)}
+.tip-card{border-left:4px solid var(--accent)}
+.src{padding-left:18px;margin:0;font-size:15px}
+.src li{margin-bottom:6px}
+.src a{color:var(--accent)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+input[type=search]{width:100%;min-height:50px;border:1px solid var(--line);border-radius:999px;background:var(--surface);padding:10px 18px;font-size:17px}
+.tabs button{font-size:13px}
 @media (max-width:360px){.actions{grid-template-columns:repeat(2,1fr)} .stats{grid-template-columns:1fr 1fr} .stat.wide{grid-column:span 2} .hero .big{font-size:38px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -224,6 +243,7 @@ i.inc{background:var(--good)} i.exp{background:var(--bad)}
   <button type="button" data-act="tab" data-tab="home" id="tab-home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>হোম</button>
   <button type="button" data-act="tab" data-tab="list" id="tab-list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>খাতা</button>
   <button type="button" data-act="tab" data-tab="month" id="tab-month"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>মাসিক</button>
+  <button type="button" data-act="tab" data-tab="learn" id="tab-learn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 7h6"/></svg>জানুন</button>
   <button type="button" data-act="tab" data-tab="more" id="tab-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>সেটিংস</button>
 </div></nav>
 <button type="button" class="fab" id="fab" data-act="pick" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>লিখুন</button>
@@ -364,12 +384,12 @@ function render() {
   $("top").hidden = false; $("tabs").hidden = false; $("fab").hidden = false;
   $("farmName").textContent = state.settings.farmName || "আমার হাঁসের খামার";
   $("todayLbl").textContent = "আজ " + dDay.format(new Date());
-  for (const t of ["home", "list", "month", "more"]) {
+  for (const t of ["home", "list", "month", "learn", "more"]) {
     const b = $("tab-" + t);
     if (t === tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
   }
   let html = storageOK ? "" : '<div class="banner bad"><p>এই ব্রাউজারে হিসাব সেভ হচ্ছে না। অ্যাপটি Chrome-এ খুলুন (প্রাইভেট/ইনকগনিটো নয়)।</p></div>';
-  html += tab === "home" ? homeHTML() : tab === "list" ? listHTML() : tab === "month" ? monthHTML() : moreHTML();
+  html += tab === "home" ? homeHTML() : tab === "list" ? listHTML() : tab === "month" ? monthHTML() : tab === "learn" ? learnHTML() : moreHTML();
   view.innerHTML = html;
 }
 
@@ -585,7 +605,7 @@ function moreHTML() {
   }
 
   h += '<section class="card"><h2>সব মুছে নতুন করে শুরু</h2><p class="muted">আগে ব্যাকআপ নিয়ে নিন। মুছে ফেললে ফেরত আনা যাবে না।</p><button type="button" class="btn danger" style="width:100%" data-act="wipe">সব হিসাব মুছে ফেলুন</button></section>';
-  h += '<footer class="note">হাঁসের খামারের হিসাব · সংস্করণ ২.১ · হিসাব শুধু এই ফোনে থাকে, কোথাও পাঠানো হয় না।</footer>';
+  h += '<footer class="note">হাঁসের খামারের হিসাব · সংস্করণ ২.২ · হিসাব শুধু এই ফোনে থাকে, কোথাও পাঠানো হয় না।</footer>';
   return h;
 }
 
@@ -602,6 +622,84 @@ function renderOnboarding(view) {
     + '<button type="submit" class="btn primary" style="width:100%">শুরু করি</button></form>'
     + '<p class="muted">আগে ব্যাকআপ নিয়ে থাকলে:</p><button type="button" class="btn" style="width:100%" data-act="restore">ব্যাকআপ থেকে ফেরত আনুন</button></div>';
 }
+
+
+/* ---------- knowledge book (general guidance; vet advice comes first) ---------- */
+const BOOK = [
+ { sec: "সাধারণ জ্ঞান", items: [
+  { t: "কোন জাতের হাঁস কেন", b: "<ul><li><b>খাকি ক্যাম্পবেল</b> — ডিমের জন্য সবচেয়ে ভালো জাত। ভালো যত্নে একটি হাঁস বছরে ২৫০–৩০০টির বেশি ডিম দিতে পারে। ওজন প্রায় ২–২.৫ কেজি।</li><li><b>জিনডিং</b> — বাংলাদেশে জনপ্রিয় ডিমের জাত, দেশি পরিবেশে ভালো চলে।</li><li><b>পেকিন</b> — মাংসের জাত; প্রায় ৬ সপ্তাহে ২–২.৫ কেজি হয়।</li><li><b>দেশি হাঁস</b> — রোগ সহ্য করার ক্ষমতা বেশি, ডিম কম।</li></ul>" },
+  { t: "কিছু জরুরি সংখ্যা", b: "<ul><li>হাঁসের ডিম ফুটতে লাগে <b>২৮ দিন</b>।</li><li>ভালো ডিমের জাত সাধারণত <b>১৬–২০ সপ্তাহ (৪–৫ মাস)</b> বয়সে ডিম পাড়া শুরু করে।</li><li>হাঁসের ডিমের ওজন সাধারণত ৬৫–৭৫ গ্রাম।</li><li>প্রথম ৪ সপ্তাহ (ব্রুডিং) সবচেয়ে ঝুঁকির সময় — এ সময়েই সবচেয়ে বেশি বাচ্চা মারা যায়।</li></ul>" },
+  { t: "কোন সময় রোগ বেশি হয়", b: "<p>বাংলাদেশের গবেষণায় দেখা গেছে, হাঁসের রোগ সবচেয়ে বেশি হয় <b>শীতকালে</b>। শীতে ঘর শুকনো ও গরম রাখুন, ঠান্ডা বাতাস আটকান, আর টিকা যেন শীতের আগেই দেওয়া থাকে।</p><p>বাংলাদেশে সবচেয়ে বেশি দেখা যায় <b>ডাক প্লেগ</b> আর <b>ডাক কলেরা</b>। আর খোলা জায়গায় পালা হাঁসের অনেক মৃত্যু হয় শিয়াল, বেজি, সাপ বা কুকুরের কারণে।</p>" }
+ ]},
+ { sec: "খামার বই — পালন পদ্ধতি", items: [
+  { t: "বাচ্চার যত্ন (০–৪ সপ্তাহ, ব্রুডিং)", b: "<ul><li><b>তাপ:</b> প্রথম সপ্তাহে ২৯–৩২° সেলসিয়াস। তারপর প্রতি সপ্তাহে একটু করে কমান। বাল্ব বা হিটার দিয়ে গরম রাখুন।</li><li><b>বাচ্চা দেখে বুঝুন:</b> তাপের নিচে গাদাগাদি করলে ঠান্ডা লাগছে; তাপ থেকে দূরে সরে হাঁ করে থাকলে বেশি গরম; সারা জায়গায় ছড়িয়ে আরামে থাকলে ঠিক আছে।</li><li><b>জায়গা:</b> প্রথম দিকে প্রতি বাচ্চার জন্য প্রায় ১০০ বর্গ সেমি (১ বর্গমিটারে ১০০টি)। বড় হলে জায়গা বাড়ান।</li><li><b>মেঝে:</b> শুকনো তুষ বা কাঠের গুঁড়া; ভেজা হলে সাথে সাথে বদলান।</li><li><b>সাঁতার:</b> প্রথম কয়েক সপ্তাহ ছোট বাচ্চাকে পুকুরে ছাড়বেন না — ঠান্ডা লেগে মারা যেতে পারে।</li></ul>" },
+  { t: "খাবার ও পানি", b: "<ul><li><b>খাবারের সাথে সবসময় পানি দিন।</b> হাঁস পানি ছাড়া শুকনো খাবার খেলে গলায় আটকে যেতে পারে।</li><li><b>প্রোটিন:</b> প্রথম ২ সপ্তাহ স্টার্টার খাবার (প্রায় ২০–২২% প্রোটিন), তারপর গ্রোয়ার (প্রায় ১৭–১৯%), ডিম পাড়ার সময় লেয়ার খাবার (প্রায় ১৫–১৮%)।</li><li><b>কতবার:</b> প্রথম ৮ সপ্তাহ খাবার সবসময় সামনে রাখুন; পরে দিনে দুবার — সকালে আর বিকেলে।</li><li><b>কত খাবার:</b> একটি খাকি ক্যাম্পবেল ২০ সপ্তাহ বয়স পর্যন্ত মোট প্রায় ১২.৫ কেজি খায়; ডিম পাড়ার সময় দিনে প্রায় ১২০ গ্রাম বা তার বেশি।</li><li>শামুক, ঘাস-পাতা, কলমি শাক খরচ কমায়, তবে মূল খাবার বাদ দেবেন না।</li><li><b>ছাঁচ পড়া (ফাঙ্গাস ধরা) খাবার কখনো দেবেন না।</b> খাবার শুকনো জায়গায় রাখুন।</li></ul>" },
+  { t: "ঘর ও নিরাপত্তা", b: "<ul><li>ঘর উঁচু, শুকনো আর বাতাস চলাচলের মতো হবে; বৃষ্টির পানি যেন না ঢোকে।</li><li>রাতে হাঁস ঘরে তালা দিয়ে রাখুন — শিয়াল, বেজি, সাপ, কুকুর থেকে বাঁচাতে।</li><li>অন্যের হাঁস বা নতুন কেনা হাঁস ২ সপ্তাহ আলাদা রেখে তারপর দলে মেশান।</li><li>বাইরের লোক খামারে ঢুকলে হাত-পা ধুয়ে ঢুকবে; অসুস্থ হাঁসের খামার থেকে এসে সরাসরি ঢুকবে না।</li><li>পানির পাত্র প্রতিদিন ধুয়ে পরিষ্কার পানি দিন।</li></ul>" },
+  { t: "ডিম পাড়া হাঁসের যত্ন", b: "<ul><li>ঘরের কোণে খড় দিয়ে শুকনো, অন্ধকার বাসা বানিয়ে দিন।</li><li>হাঁস সাধারণত ভোরে ডিম পাড়ে — সকালে ডিম তুলে তারপর হাঁস ছাড়ুন।</li><li>লেয়ার খাবারে ক্যালসিয়াম লাগে; ঝিনুক বা শামুকের খোসা গুঁড়া উপকারী।</li><li>ডিম হঠাৎ কমে গেলে খাবার, পানি, রোগ আর ভয় পাওয়ার কারণ খুঁজুন।</li></ul>" }
+ ]},
+ { sec: "টিকা", items: [
+  { t: "কোন টিকা কখন", b: "<p class='hint'>নিচের সূচি গবেষণা ও প্রচলিত নিয়ম থেকে নেওয়া। এলাকাভেদে সূচি আলাদা হতে পারে — <b>উপজেলা প্রাণিসম্পদ অফিস থেকে নিশ্চিত হয়ে নিন</b>। সেখানে সরকারি টিকা পাওয়া যায়।</p><table class='tbl'><tr><th>টিকা</th><th>প্রথম ডোজ</th><th>পরের ডোজ</th></tr><tr><td><b>ডাক প্লেগ</b></td><td>প্রায় ৩–৪ সপ্তাহ বয়সে (গবেষণায় ২১–২৮ দিন উপযুক্ত পাওয়া গেছে)</td><td>বুস্টার ও পরে নিয়মিত টিকা — অফিসের পরামর্শমতো</td></tr><tr><td><b>ডাক কলেরা</b></td><td>প্রায় ৪–৬ সপ্তাহ বয়সে</td><td>প্রায় ৪–৫ সপ্তাহ পর বুস্টার; পরে অফিসের পরামর্শমতো</td></tr></table><p>দুটি টিকা একই দিনে দেবেন না — মাঝে অন্তত এক সপ্তাহ রাখুন, অথবা ডাক্তার যেভাবে বলেন।</p>" },
+  { t: "টিকা দেওয়ার নিয়ম", b: "<ul><li>টিকা ঠান্ডায় (বরফ বা ফ্রিজে) আনুন ও রাখুন; রোদে রাখবেন না।</li><li>ভোরে বা বিকেলে ঠান্ডা সময়ে দিন।</li><li>অসুস্থ হাঁসকে টিকা দেবেন না।</li><li>টিকা গোলানোর পর সেদিনই শেষ করুন; বাকিটা মাটিতে পুঁতে ফেলুন।</li><li>পরিষ্কার সিরিঞ্জ ব্যবহার করুন; মাত্রা বোতলের লেখা বা ডাক্তারের কথামতো।</li><li>টিকার পর ১–২ দিন হাঁস একটু ঝিমাতে পারে — পানি আর খাবার ঠিক রাখুন।</li><li>দেওয়ার পর অ্যাপের “টিকা / ওষুধ”-এ লিখুন, পরের ডোজের তারিখ দিন — অ্যাপ মনে করিয়ে দেবে।</li></ul>" }
+ ]},
+ { sec: "রোগ ও চিকিৎসা", items: [
+  { t: "হাঁস অসুস্থ হলে প্রথমে যা করবেন", b: "<ol><li>অসুস্থ হাঁস সাথে সাথে <b>আলাদা</b> করুন।</li><li>পরিষ্কার পানি দিন; ঘর শুকনো রাখুন।</li><li>যত দ্রুত সম্ভব <b>উপজেলা প্রাণিসম্পদ অফিস / পশু হাসপাতালে</b> দেখান — মরা হাঁস নিয়ে গেলে পরীক্ষা করে রোগ বলতে পারে।</li><li><b>নিজে থেকে অ্যান্টিবায়োটিক দেবেন না।</b> ভুল ওষুধে টাকা নষ্ট হয়, রোগ সারে না।</li><li>মরা হাঁস খোলা জায়গায় বা পানিতে ফেলবেন না — গর্তে চুন দিয়ে পুঁতে ফেলুন।</li><li>অ্যাপে “হাঁস কম-বেশি”-তে মৃত্যু আর কারণ লিখে রাখুন।</li></ol>" },
+  { t: "ডাক প্লেগ", b: "<p><b>লক্ষণ:</b> সবুজ পাতলা পায়খানা, ডানা ঝুলে পড়া, আলো সহ্য করতে না পারা, খাওয়া বন্ধ, চোখ-নাক দিয়ে পানি, অল্প দিনে অনেক হাঁসের মৃত্যু।</p><p><b>চিকিৎসা:</b> এটি ভাইরাসের রোগ — <b>কোনো ওষুধে সারে না।</b> একমাত্র উপায় সময়মতো টিকা।</p><p><b>কী করবেন:</b> অসুস্থ হাঁস আলাদা করুন, সুস্থ হাঁসদের ডাক্তারের পরামর্শে টিকা দিন, অন্য খামারের হাঁসের সাথে পানি-পুকুর ভাগ করবেন না।</p>" },
+  { t: "ডাক কলেরা", b: "<p><b>লক্ষণ:</b> জ্বর, পাতলা পায়খানা, মুখ-নাক দিয়ে লালা বা শ্লেষ্মা, খাওয়া বন্ধ, হঠাৎ মৃত্যু। কম বয়সী হাঁসে বেশি হয়।</p><p><b>চিকিৎসা:</b> এটি ব্যাকটেরিয়ার রোগ — ডাক্তারের দেওয়া ওষুধে কাজ হয়। দেরি করবেন না।</p><p><b>প্রতিরোধ:</b> টিকা, পরিষ্কার পানি, শুকনো ঘর।</p>" },
+  { t: "বার্ড ফ্লু (এভিয়ান ইনফ্লুয়েঞ্জা) — জরুরি", b: "<p><b>লক্ষণ:</b> হঠাৎ অনেক হাঁস মারা যাওয়া, মাথা-চোখ ফোলা, ঘাড় বাঁকা, শ্বাসকষ্ট।</p><p><b>সাথে সাথে করুন:</b> উপজেলা প্রাণিসম্পদ অফিসে জানান। মরা বা অসুস্থ হাঁস খালি হাতে ধরবেন না, শিশুদের দূরে রাখুন, হাঁস বিক্রি বা সরানো বন্ধ রাখুন। এ রোগ মানুষেরও হতে পারে।</p>" },
+  { t: "বাচ্চার শ্বাস ও স্নায়ুর রোগ (রিমেরেলা)", b: "<p><b>লক্ষণ:</b> ছোট বাচ্চার শ্বাসকষ্ট, চোখ-নাক দিয়ে পানি, ঘাড় বাঁকা, কাঁপুনি, উল্টে পড়ে যাওয়া।</p><p><b>প্রতিরোধ:</b> ব্রুডার পরিষ্কার ও শুকনো রাখুন, ভিড় কমান, ঠান্ডা-গরমের হঠাৎ বদল এড়ান। চিকিৎসা ডাক্তারের পরামর্শে।</p>" },
+  { t: "পেটের সংক্রমণ (সালমোনেলা, ই-কোলাই)", b: "<p><b>লক্ষণ:</b> পাতলা বা সাদা পায়খানা, পায়ুর চারপাশ নোংরা, দুর্বলতা, বাচ্চা মারা যাওয়া।</p><p><b>প্রতিরোধ:</b> প্রতিদিন পানির পাত্র ধোয়া, ভেজা লিটার বদলানো, পরিষ্কার খাবার। চিকিৎসা ডাক্তারের পরামর্শে।</p>" },
+  { t: "ছাঁচ পড়া খাবারের বিষ (আফলাটক্সিন)", b: "<p><b>লক্ষণ:</b> খাওয়া কমা, দুর্বলতা, পা দুর্বল হয়ে বসে পড়া, ডিম কমে যাওয়া, মৃত্যু। হাঁস এ বিষে খুব সংবেদনশীল।</p><p><b>প্রতিরোধ:</b> ভেজা, গন্ধ বা ছাঁচ পড়া খাবার ফেলে দিন; খাবার শুকনো ও বন্ধ পাত্রে রাখুন; একবারে বেশি দিনের খাবার কিনবেন না।</p>" },
+  { t: "কৃমি ও পরজীবী", b: "<p><b>লক্ষণ:</b> খাচ্ছে কিন্তু ওজন বাড়ছে না, পালক রুক্ষ, ডিম কম, পায়খানায় কৃমি।</p><p><b>কী করবেন:</b> ডাক্তারের পরামর্শে কৃমিনাশক দিন; নিয়মিত সময় পরপর দেওয়ার সূচি জেনে নিন এবং অ্যাপে লিখে রাখুন।</p>" },
+  { t: "পুষ্টির অভাব", b: "<p><b>লক্ষণ:</b> পা দুর্বল বা বাঁকা, খুঁড়িয়ে হাঁটা, ধীরে বাড়া, পাতলা খোসার ডিম।</p><p><b>কারণ ও প্রতিরোধ:</b> হাঁসের নিয়াসিন (একটি ভিটামিন) মুরগির চেয়ে বেশি লাগে — হাঁসের জন্য বানানো খাবার বা ভিটামিন মেশানো খাবার দিন। ডিম পাড়ার সময় ক্যালসিয়াম দিন।</p>" }
+ ]}
+];
+function ageTips() {
+  const lb = liveBatches();
+  if (!lb.length) return "";
+  let h = '<section class="card tip-card"><h2>এখন আপনার হাঁসের জন্য</h2>';
+  for (const b of lb) {
+    const a = batchAge(b);
+    if (a == null) continue;
+    let tip;
+    if (a < 28) tip = "ব্রুডিংয়ের সময়: তাপ, শুকনো মেঝে আর সবসময় খাবার-পানি। পুকুরে এখনো ছাড়বেন না।";
+    else if (a < 49) tip = "টিকার সময় চলছে: ডাক প্লেগ ও ডাক কলেরা টিকা দেওয়া হয়েছে কিনা দেখে নিন।";
+    else if (a < 112) tip = "বাড়ন্ত সময়: দিনে দুবার খাবার, রাতে নিরাপদ ঘর, বুস্টার টিকা ঠিক সময়ে।";
+    else if (a < 150) tip = "ডিম পাড়া শুরুর সময় আসছে: বাসা তৈরি করুন, লেয়ার খাবার ও ক্যালসিয়াম দিন, ডিম গুনে অ্যাপে লিখুন।";
+    else tip = "ডিম পাড়ার সময়: প্রতিদিন ডিম লিখুন, খাবারে ক্যালসিয়াম রাখুন, ডিম কমলে কারণ খুঁজুন।";
+    h += '<div class="line-item"><span><b>' + esc(b.name) + "</b> · বয়স " + ageText(a) + "<br>" + esc(tip) + "</span></div>";
+  }
+  return h + "</section>";
+}
+let learnQuery = "";
+function learnHTML() {
+  let h = '<h2 style="font-size:22px;margin:6px 0 4px">হাঁস পালনের বই</h2><p class="muted" style="margin:0 0 12px">সাধারণ তথ্য। ওষুধ ও মাত্রার জন্য সবসময় পশু ডাক্তার বা উপজেলা প্রাণিসম্পদ অফিসের পরামর্শ নিন।</p>';
+  h += '<label class="field" for="learn-q"><span class="sr">খুঁজুন</span><input type="search" id="learn-q" placeholder="খুঁজুন: যেমন কলেরা, খাবার, তাপ" value="' + esc(learnQuery) + '" autocomplete="off"></label>';
+  h += ageTips();
+  h += '<div id="book">' + bookHTML() + "</div>";
+  h += '<section class="card"><h2>তথ্যসূত্র</h2><ul class="src">'
+    + '<li><a href="https://www.banglajol.info/index.php/BJVM/article/view/1335" target="_blank" rel="noopener">ডাক প্লেগ টিকার বয়স — Bangladesh Journal of Veterinary Medicine</a></li>'
+    + '<li><a href="https://www.banglajol.info/index.php/RALF/article/view/81500" target="_blank" rel="noopener">সিলেটে হাঁসের রোগ (২০২০–২০২৪) — Res. Agric. Livest. Fish.</a></li>'
+    + '<li><a href="https://jsau.sau.ac.bd/?p=1191" target="_blank" rel="noopener">সিলেটে হাঁসের রোগের হার ও ঋতু — সিলেট কৃষি বিশ্ববিদ্যালয়</a></li>'
+    + '<li><a href="https://banglajol.info/index.php/BVET/article/view/18253/12764" target="_blank" rel="noopener">জিনডিং হাঁসে কলেরা টিকা — The Bangladesh Veterinarian</a></li>'
+    + '<li><a href="https://pashudhanpraharee.com/wp-content/uploads/2019/08/DUCK-FARMING-GUIDE.pdf" target="_blank" rel="noopener">Duck Farming Guide — খাবার, জাত, ব্রুডিং</a></li>'
+    + "</ul></section>";
+  return h;
+}
+function bookHTML() {
+  const q = learnQuery.trim();
+  let h = "", any = false;
+  for (const sec of BOOK) {
+    const items = sec.items.filter((it) => !q || (it.t + " " + it.b.replace(/<[^>]+>/g, " ")).includes(q));
+    if (!items.length) continue;
+    any = true;
+    h += '<h3 class="day">' + esc(sec.sec) + "</h3>";
+    for (const it of items) h += '<details class="card book"' + (q ? " open" : "") + "><summary>" + esc(it.t) + '</summary><div class="book-b">' + it.b + "</div></details>";
+  }
+  return any ? h : '<p class="empty">“' + esc(q) + "” নিয়ে কিছু পাওয়া যায়নি।</p>";
+}
+document.addEventListener("input", (ev) => {
+  if (ev.target.id === "learn-q") { learnQuery = ev.target.value; const b = $("book"); if (b) b.innerHTML = bookHTML(); }
+});
 
 /* ---------- form building ---------- */
 function field(id, label, value, kind, hint) {
